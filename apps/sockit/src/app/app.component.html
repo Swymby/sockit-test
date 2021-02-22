@@ -5,9 +5,12 @@
     src="https://nx.dev/assets/images/nx-logo-white.svg"
   />
   <h1>{{ (message$ | async)?.message }}!</h1>
+  <h2>{{ (generator$ | async )?.data }}</h2>
 </header>
 <main>
   <h2>Resources &amp; Tools</h2>
+  <h2>{{ (generator2$ | async )?.data }}</h2>
+
   <p>Thank you for using and showing some ♥ for Nx.</p>
   <div class="flex github-star-container">
     <a
