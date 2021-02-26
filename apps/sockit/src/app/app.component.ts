@@ -1,11 +1,29 @@
 import { HttpClient } from '@angular/common/http'
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core'
 
-import { GENERATOR, Message } from '@simopoc/interfaces'
+import { Message, Generator } from '@simopoc/interfaces'
 
-import { webSocket } from 'rxjs/webSocket'
-import { delay, retry, retryWhen, tap } from 'rxjs/operators'
-import { interval } from 'rxjs'
+import { Apollo } from 'apollo-angular'
+import gql from 'graphql-tag'
+import { Subject } from 'rxjs'
+
+import { map, takeUntil } from 'rxjs/operators'
+
+const QUERY = gql`
+    query helloMessage {
+        messages {
+            message
+        }
+    }
+`
+
+const GENERATOR = gql`
+    subscription generated {
+        generated {
+            number
+        }
+    }
+`
 
 @Component({
     selector: 'soc-root',
@@ -14,37 +32,21 @@ import { interval } from 'rxjs'
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent implements OnInit {
-    private webSocketSubject = webSocket('ws://localhost:8080/stream')
+    notifier = new Subject<string>()
 
     title = 'sockit'
     message$ = this.http.get<Message>('/api')
 
-    generator$ = this.webSocketSubject.multiplex(
-        () => ({ event: GENERATOR, data: 'gen1' }),
-        () => ({ event: GENERATOR, data: 'unsubscribe' }),
-        (val: any) => val.sub === 'gen1'
-    ).pipe(
-        tap(d => console.log('gen 1', d)),
-        retryWhen(errors => errors.pipe(
-            delay(5000)
-        ))
+    generator$ = this.apollo.subscribe<{ generated: Generator }>({ query: GENERATOR }).pipe(
+        map(res => res.data?.generated.number),
+        takeUntil(this.notifier)
     )
 
-    generator2$ = this.webSocketSubject.multiplex(
-        () => ({ event: GENERATOR, data: 'gen2' }),
-        () => ({ event: GENERATOR, data: 'unsubscribe' }),
-        (val: any) => val.sub === 'gen2'
-    ).pipe(
-        tap(d => console.log('gen 2', d)),
-        retryWhen(errors => errors.pipe(
-            delay(5000)
-        ))
-    )
-
-    constructor(private readonly http: HttpClient) {}
+    constructor(private readonly http: HttpClient, private readonly apollo: Apollo) { }
 
     ngOnInit(): void {
-      //  this.webSocketSubject.next({ subscribe: GENERATOR })
         console.log('INIT')
+
+        this.apollo.query({ query: QUERY }).subscribe(res => console.log(res))
     }
 }

@@ -1,0 +1,15 @@
+type Message {
+    message: String!
+}
+
+type Generator {
+    number: Int!
+}
+
+type Query {
+    messages: Message
+}
+
+type Subscription {
+    generated: Generator
+}
