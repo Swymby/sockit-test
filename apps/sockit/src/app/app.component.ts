@@ -7,7 +7,7 @@ import { Apollo } from 'apollo-angular'
 import gql from 'graphql-tag'
 import { Subject } from 'rxjs'
 
-import { map, takeUntil } from 'rxjs/operators'
+import { map, takeUntil, tap } from 'rxjs/operators'
 
 const QUERY = gql`
     query helloMessage {
@@ -18,8 +18,16 @@ const QUERY = gql`
 `
 
 const GENERATOR = gql`
-    subscription generated {
+    subscription {
         generated {
+            number
+        }
+    }
+`
+
+const WORKSPACE_GENERATOR = gql`
+    subscription generated($workspaceId: String!, $max: Int) {
+        generatedWorkspace(workspaceId: $workspaceId, max: $max) {
             number
         }
     }
@@ -37,8 +45,18 @@ export class AppComponent implements OnInit {
     title = 'sockit'
     message$ = this.http.get<Message>('/api')
 
-    generator$ = this.apollo.subscribe<{ generated: Generator }>({ query: GENERATOR }).pipe(
-        map(res => res.data?.generated.number),
+    // generator$ = this.apollo.subscribe<{ generated: Generator }>({ query: GENERATOR }, { useZone: false }).pipe(
+    //     map(res => res.data?.generated.number),
+    //     takeUntil(this.notifier)
+    // )
+
+    // generatorWorkspace$ = this.apollo.subscribe<{ generatedWorkspace: Generator }>({ query: WORKSPACE_GENERATOR, variables: { workspaceId: 'zat', max: 85 } }, { useZone: false }).pipe(
+    //     map(res => res.data?.generatedWorkspace.number),
+    //     takeUntil(this.notifier)
+    // )
+
+    generatorWorkspace2$ = this.apollo.subscribe<{ generatedWorkspace: Generator }>({ query: WORKSPACE_GENERATOR, variables: { workspaceId: 'zat', max: (Math.floor(Math.random() * 100)) } }, { useZone: false }).pipe(
+        map(res => res.data?.generatedWorkspace.number),
         takeUntil(this.notifier)
     )
 

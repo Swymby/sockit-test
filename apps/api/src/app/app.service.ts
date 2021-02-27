@@ -16,6 +16,8 @@ export class AppService {
 
     @Interval(1000)
     async generate() {
-        await this.pubSub.publish('generated', { generated: { number: Math.floor(Math.random() * 100) } })
+        const random = Math.floor(Math.random() * 100)
+        await this.pubSub.publish('generated', { generated: { number: random } })
+        await this.pubSub.publish('generatedWorkspace', { generatedWorkspace: { number: random } })
     }
 }

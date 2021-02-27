@@ -7,6 +7,7 @@ import { RouterModule } from '@angular/router'
 
 import { APOLLO_OPTIONS } from 'apollo-angular'
 import { HttpLink } from 'apollo-angular/http'
+
 import { split, InMemoryCache } from '@apollo/client/core'
 
 import { WebSocketLink } from '@apollo/client/link/ws'
@@ -32,6 +33,7 @@ import { getMainDefinition } from '@apollo/client/utilities'
                     uri: `ws://localhost:3333/graphql`,
                     options: {
                         reconnect: true,
+                        reconnectionAttempts: 10
                     },
                 })
 

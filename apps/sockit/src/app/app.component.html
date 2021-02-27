@@ -5,15 +5,17 @@
     src="https://nx.dev/assets/images/nx-logo-white.svg"
   />
   <h1>{{ (message$ | async)?.message }}!</h1>
-  <h2>{{ generator$ | async }}</h2>
+  <!-- <h2>{{ generator$ | async }}</h2> -->
 
   <button type="button" (click)="notifier.next('go')">STOP</button>
 </header>
 <main>
   <h2>Resources &amp; Tools</h2>
+  <!-- <h2>{{ generatorWorkspace$ | async }}</h2> -->
 
   <p>Thank you for using and showing some ♥ for Nx.</p>
   <div class="flex github-star-container">
+    <!-- <h2>{{ generatorWorkspace2$ | async }}</h2> -->
     <a
       href="https://github.com/nrwl/nx"
       target="_blank"

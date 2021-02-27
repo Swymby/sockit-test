@@ -24,4 +24,5 @@ export interface IQuery {
 export interface ISubscription {
     __typename?: 'ISubscription';
     generated(): Generator | Promise<Generator>;
+    generatedWorkspace(workspaceId: string, max?: number): Generator | Promise<Generator>;
 }
